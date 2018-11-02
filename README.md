@@ -80,8 +80,7 @@ block-size invariance analysis) can be done similarly.
    `add_subdirectory(UncoalescedAnalysis)` to `llvm/lib/Transforms/CMakeLists.txt`
    
    Sample CMakeLists.txt file:
-```bash
-   $>  more CMakeLists.txt
+```cmake
    add_subdirectory(Utils)
    add_subdirectory(Instrumentation)
    add_subdirectory(InstCombine)
@@ -197,7 +196,8 @@ it considers the join of the call contexts of all its callers. To run an intrapr
 analysis (that assumes all initial function arguments are independent of thread's id),
 specify pass `-uncoalesced-analysis` to be run, instead of `-interproc-uncoalesced-analysis`.
 ```bash
-opt -load ../../../build/lib/LLVMUncoalescedAnalysis.so -instnamer -interproc-uncoalesced-analysis < gaussian-cuda-nvptx64-nvidia-cuda-sm_20.ll > /dev/null 2> gpuDranoResults.txt
+opt -load ../../../build/lib/LLVMUncoalescedAnalysis.so -instnamer -interproc-uncoalesced-analysis \
+    < gaussian-cuda-nvptx64-nvidia-cuda-sm_20.ll > /dev/null 2> gpuDranoResults.txt
 ```
 Notice `opt` reads the IR file from standard input. `opt` writes it's own uninteresting
 output to standard out so we redirection it to `/dev/null` GPU Drano's output is
@@ -209,7 +209,9 @@ To generate verbose analysis results (LLVM IR annotated with analysis info), run
 The following command can be used to run the block-size independence analysis on a program.
 
 ```bash
-opt -load ../../../build/lib/LLVMBlockSizeInvarianceAnalysis.so - -instnamer -always-inline -interproc-bsize-invariance-analysis < gaussian-cuda-nvptx64-nvidia-cuda-sm_20.ll > /dev/null 2> gpuDranoResults.txt
+opt -load ../../../build/lib/LLVMBlockSizeInvarianceAnalysis.so - -instnamer -always-inline \
+    -interproc-bsize-invariance-analysis < gaussian-cuda-nvptx64-nvidia-cuda-sm_20.ll > /dev/null \
+    2> gpuDranoResults.txt
 ```
 
 ### Understanding GPU Drano's output
