@@ -42,7 +42,7 @@ The details of the algorithm and the design choices can be found in following pa
 2) [Block-size Independence for GPU Programs](https://www.cis.upenn.edu/~alur/SAS18.pdf).
 
 ## Installation
-The script `installnrun.sh` included with the project details the steps required
+The script [installnrun.sh](installnrun.sh) included with the project details the steps required
 to build and execute GPU Drano on an Ubuntu system. To run the script,
 * Download GPU Drano and set `ROOT_DIR` to the path to the downloaded folder. 
 * Run `sh installnrun.sh`
@@ -57,21 +57,21 @@ block-size invariance analysis) can be done similarly.
 1) Get LLVM source:
 
    Ensure `subversion` is installed. Download the newest version of LLVM:
-```
+```bash
     svn co http://llvm.org/svn/llvm-project/llvm/trunk llvm
  ```
 2) Get Clang source:
 
    Change your current working directory to `llvm/tools/` and check out `clang`
    from the svn repository:
-```
+```bash
     svn co http://llvm.org/svn/llvm-project/cfe/trunk clang
 ```
 3) Add GPU Drano to LLVM:
 
    Copy GPU Drano's `src/` folder into the directory `llvm/lib/Transforms/UncoalescedAnalysis`
    in your source code:
-```   
+```bash   
    cp -r src/abstract-execution/* llvm/lib/Transforms/UncoalescedAnalysis
    cp -r src/uncoalesced-analysis/* llvm/lib/Transforms/UncoalescedAnalysis
 ```
@@ -80,7 +80,7 @@ block-size invariance analysis) can be done similarly.
    `add_subdirectory(UncoalescedAnalysis)` to `llvm/lib/Transforms/CMakeLists.txt`
    
    Sample CMakeLists.txt file:
-```
+```bash
    $>  more CMakeLists.txt
    add_subdirectory(Utils)
    add_subdirectory(Instrumentation)
@@ -98,7 +98,7 @@ block-size invariance analysis) can be done similarly.
    From the root directory of Drano, create a `build/` directory. Then,
    change directory to the `build/` directory. Ensure CMake is installed on
    the system. Execute the following commands here:
-```   
+```bash   
    cmake ../llvm 
    make
 ```
@@ -147,7 +147,7 @@ and CUDA programs themselves.
 ### Verifying CUDA + LLVM installation
 This step is *optional*. A simple CUDA program like "hello world" should now compile 
 using `clang` or `clang++`:
-```
+```bash
 clang -x cuda helloWorld.cu
 ```
 The `-x cuda` option explicitly states the language. You may omit it as well and 
@@ -158,7 +158,7 @@ LLVM functions, if so, you may need to include `-lcudart`. You may also need to
 point to the location of the `cudart.so`.
 
 Example:
-```
+```bash
 clang -x cuda -L /usr/local/cuda/targets/x86_64-linux/lib/ -lcudart helloWorld.cu
 ```
 The path to *your* cudart.so may be different depending on your system.
@@ -176,7 +176,7 @@ As an example, let's analyze the `Rodinia` kernel code for the `gaussian` benchm
 We change directory into `rodinia_3.1/cuda/gaussian/`.
 
 First we have clang generate LLVM IR files for the code we are interested in:
-```
+```bash
 clang++ -S -g -emit-llvm gaussian.cu
 ```
 Notice we compile with debug symbol `-g`, to keep the debug information about
@@ -184,7 +184,7 @@ source code locations in the generated IR. This is used to point source code loc
 with potential uncoalesced accesses from LLVM IR.
 
 The compilation generates two files:
-```
+```bash
 gaussian-cuda-nvptx64-nvidia-cuda-sm_20.ll
 gaussian.ll
 ```
@@ -196,7 +196,7 @@ analysis of its callees in a topological order. While analyzing a specific calle
 it considers the join of the call contexts of all its callers. To run an intraprocedural
 analysis (that assumes all initial function arguments are independent of thread's id),
 specify pass `-uncoalesced-analysis` to be run, instead of `-interproc-uncoalesced-analysis`.
-```
+```bash
 opt -load ../../../build/lib/LLVMUncoalescedAnalysis.so -instnamer -interproc-uncoalesced-analysis < gaussian-cuda-nvptx64-nvidia-cuda-sm_20.ll > /dev/null 2> gpuDranoResults.txt
 ```
 Notice `opt` reads the IR file from standard input. `opt` writes it's own uninteresting
@@ -208,7 +208,7 @@ To generate verbose analysis results (LLVM IR annotated with analysis info), run
 
 The following command can be used to run the block-size independence analysis on a program.
 
-```
+```bash
 opt -load ../../../build/lib/LLVMBlockSizeInvarianceAnalysis.so - -instnamer -always-inline -interproc-bsize-invariance-analysis < gaussian-cuda-nvptx64-nvidia-cuda-sm_20.ll > /dev/null 2> gpuDranoResults.txt
 ```
 
@@ -251,11 +251,11 @@ using static analysis. To reproduce the results, here are the steps involved:
 2) Go to benchmarks directory `rodinia_3.1/cuda`.
 
 3) Compile benchmarks:
-```
+```bash
    sh compile.sh
 ```
 4) Run GPU Drano on benchmarks (takes about 2 hours):
-```
+```bash
    sh run-analysis.sh
 ```
 
@@ -263,7 +263,7 @@ using static analysis. To reproduce the results, here are the steps involved:
    named `log_<filename>`.
 
 5) Summarize results:
-```
+```bash
    ./summarize-results.sh
 ```
 
@@ -277,18 +277,18 @@ reproduce the results, the steps are:
 
 2) Install OpenGL (required for compiling a few benchmarks). On Ubuntu, following
    command can be used:
-```
+```bash
    sudo apt-get install freeglut3-dev
 ```
 
 3) Go to the directory `NVIDIA_CUDA-8.0_Samples`
 
 4) Compile benchmarks:
-```
+```bash
    sh compile.sh
 ```
 5) Run GPU Drano on benchmarks (takes about 2 hours):
-```
+```bash
    sh run-analysis.sh
 ```
 
@@ -296,6 +296,6 @@ reproduce the results, the steps are:
    named `log_<filename>`.
 
 6) Summarize results:
-```
+```bash
    ./summarize-bsize-independence.sh
 ```
